@@ -1,4 +1,4 @@
-# rb.db ![build status](https://github.com/ojuuji/rb.db/actions/workflows/build-db.yml/badge.svg)
+# rb.db
 
 This repository ultimately generates an SQLite database file containing tables from [Rebrickable Downloads](https://rebrickable.com/downloads/) and a few custom tables and views, non-trivially generated from them.
 

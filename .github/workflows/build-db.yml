@@ -2,24 +2,8 @@ name: build
 
 on:
   push:
-    branches:
-      - master
-    paths:
-      - 'build/*'
-      - 'schema/*'
-      - 'build.sh'
-
+  pull_request:
   workflow_dispatch:
-
-  workflow_call:
-
-permissions:
-  actions: write
-  contents: write
-
-concurrency:
-  group: build
-  cancel-in-progress: true
 
 jobs:
   build:
@@ -75,44 +59,29 @@ jobs:
           path: data/rb.dump.sha256
           key: SQL Dump Hash ${{ steps.generate-hash.outputs.sha256 }}
 
-      - name: Prepare release files
-        if: steps.hash.outputs.cache-hit != 'true'
-        run: |
-          set -xeu
-          cd data
-          shasum -a256 rb.db > rb.db.sha256
-          xz -k rb.db
-          gzip -k rb.db
-          zip rb.db.zip rb.db
+      - name: Cancel this run
+        if: steps.hash.outputs.cache-hit == 'true'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            github.rest.actions.cancelWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.runId
+            });
+      # Separate wait step to ensure correct reporting on previous step's success or failure
+      - name: Wait for workflow to cancel
+        if: steps.hash.outputs.cache-hit == 'true'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const delay = ms => new Promise(res => setTimeout(res, ms));
+            while (true) {
+              core.info('Waiting for workflow to cancel ...');
+              await delay(5000);
+            }
 
-      - name: Create release
-        if: steps.hash.outputs.cache-hit != 'true'
-        run: bash -x utils/create_release.sh
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # Unlike other steps, this one needs PAT since GITHUB_TOKEN cannot trigger
-      # other workflows. So this step is made optional to simplify forking.
-      - name: Deploy site
-        if: steps.hash.outputs.cache-hit != 'true' && env.GH_TOKEN != ''
-        run: |
-          set -xeu
-          WORKFLOW_ID="$(gh workflow list | grep -Poi 'site.+\s\K\d+$')"
-          gh workflow run "$WORKFLOW_ID"
-        env:
-          GH_TOKEN: ${{ secrets.PAT }}
-
-      - name: Prune old releases
-        if: steps.hash.outputs.cache-hit != 'true'
-        run: bash -x utils/prune_old_releases.sh
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Prune old caches
-        if: steps.hash.outputs.cache-hit != 'true'
-        run: |
-          set -xeu
-          NKEEP=5
-          gh cache list --json id --jq ".[].id" | tail -n+$((NKEEP+1)) | xargs -rn1 gh cache delete
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rb.db
+          path: data/rb.db
