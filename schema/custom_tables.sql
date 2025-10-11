@@ -32,6 +32,13 @@ CREATE TABLE part_rels_extra(
   parent_part_num TEXT NOT NULL  -- actually not reference actual part numbers
 ) STRICT;
 
+CREATE TABLE molds_resolved(
+  part_a TEXT NOT NULL REFERENCES parts(part_num),
+  part_b TEXT NOT NULL REFERENCES parts(part_num),
+  distance INTEGER CHECK(distance > 0)
+) STRICT;
+
+
 CREATE VIEW ___set_parts_for_stats
 AS
     WITH set_inventories
@@ -67,7 +74,7 @@ AS
     FROM flattened_set_parts
    GROUP BY set_num, part_num, color_id;
 
-CREATE VIEW part_color_stats
+CREATE TABLE part_color_stats
 AS
   SELECT part_num
        , color_id
