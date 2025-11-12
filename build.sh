@@ -43,7 +43,7 @@ if [[ $# -eq 0 ]]; then
 	echo ":: creating custom tables ..."
 	apply_sql schema/custom_tables.sql
 
-	python build/gen_molds_resolved.py
+	python build/gen_alternate_parts.py
 	python build/gen_color_properties.py
 	python build/gen_similar_color_ids.py
 	python build/gen_part_rels_resolved.py
