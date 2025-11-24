@@ -14,6 +14,11 @@ SET rgb = upper(rgb);
 
 --
 
+ALTER TABLE parts ADD COLUMN num_sort_pos INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE parts ADD COLUMN name_sort_pos INTEGER NOT NULL DEFAULT 0;
+
+--
+
 CREATE TABLE alternate_parts(
   part_a TEXT NOT NULL REFERENCES parts(part_num),
   part_b TEXT NOT NULL REFERENCES parts(part_num),

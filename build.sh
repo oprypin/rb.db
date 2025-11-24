@@ -58,5 +58,6 @@ pytest "${PYTEST_ARGS[@]}"
 echo ":: making custom changes ..."
 apply_sql schema/update_to_my_style.sql
 python build/gen_alternate_parts.py
+python build/gen_sort_orders.py
 
 echo ":: done"
