@@ -43,11 +43,8 @@ if [[ $# -eq 0 ]]; then
 	echo ":: creating custom tables ..."
 	apply_sql schema/custom_tables.sql
 
-	python build/gen_alternate_parts.py
 	python build/gen_color_properties.py
 	python build/gen_similar_color_ids.py
-	python build/gen_part_rels_resolved.py
-	python build/gen_part_rels_extra.py
 
 	echo ":: creating indexes on custom tables ..."
 	apply_sql schema/custom_indexes.sql
@@ -55,8 +52,11 @@ fi
 
 echo ":: running tests ..."
 
-PYTEST_ARGS=(-q --pylama)
-[[ $# -ne 0 ]] && PYTEST_ARGS+=(-m 'not custom_schema')
+PYTEST_ARGS=(-q -m 'not custom_schema')
 pytest "${PYTEST_ARGS[@]}"
+
+echo ":: making custom changes ..."
+apply_sql schema/update_to_my_style.sql
+python build/gen_alternate_parts.py
 
 echo ":: done"

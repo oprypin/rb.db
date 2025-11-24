@@ -32,14 +32,6 @@ CREATE TABLE part_rels_extra(
   parent_part_num TEXT NOT NULL  -- actually not reference actual part numbers
 ) STRICT;
 
-CREATE TABLE alternate_parts(
-  part_a TEXT NOT NULL REFERENCES parts(part_num),
-  part_b TEXT NOT NULL REFERENCES parts(part_num),
-  distance INTEGER
-  CHECK(distance > 0 OR part_a = part_b)
-) STRICT;
-
-
 CREATE VIEW ___set_parts_for_stats
 AS
     WITH set_inventories

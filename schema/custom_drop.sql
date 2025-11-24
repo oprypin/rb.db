@@ -10,9 +10,6 @@ DROP INDEX IF EXISTS part_rels_resolved_rel_type_child_part_num_idx;
 DROP TABLE IF EXISTS part_rels_extra;
 DROP INDEX IF EXISTS part_rels_extra_rel_type_child_part_num_idx;
 
-DROP TABLE IF EXISTS alternate_parts;
-DROP INDEX IF EXISTS alternate_parts_child_part_num_idx;
-
 DROP VIEW IF EXISTS ___set_parts_for_stats;
 DROP TABLE IF EXISTS part_color_stats;
 DROP VIEW IF EXISTS part_stats;
