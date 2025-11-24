@@ -2,7 +2,7 @@ from contextlib import closing
 import colorsys
 from dbconn import DbConnect
 
-HARDCODED_ORDER = ["[Unknown]", "[No Color/Any Color]", "White", "Black"]
+HARDCODED_ORDER = ["[Unknown]", "[No Color/Any Color]", "Glow in Dark White", "White", "Black"]
 GRAY_THRESHOLD = 20 / 255.0
 
 
@@ -23,10 +23,11 @@ def color_sort_key(color):
     if color.name in HARDCODED_ORDER:
         return (1, HARDCODED_ORDER.index(color.name))
 
-    if color.is_grayscale():
-        return (2, color.r)
-
     h, s, v = colorsys.rgb_to_hsv(color.r, color.g, color.b)
+
+    if color.is_grayscale():
+        return (2, v, s, h)
+
     return (3, h, s, v)
 
 
@@ -39,12 +40,16 @@ def gen_color_properties(conn):
             colors.append(Color(id, name, rgb))
 
     sorted_colors = sorted(colors, key=color_sort_key)
+    prev_key = None
     with conn, closing(conn.cursor()) as cur:
         pos = 0
         for color in sorted_colors:
+            key = color_sort_key(color)
+            if key != prev_key:
+                pos += 1
+                prev_key = key
             cur.execute('INSERT INTO color_properties VALUES (?, ?, ?)',
                         (color.id, pos, color.is_grayscale()))
-            pos = pos + 1
 
 
 if __name__ == '__main__':
