@@ -2,7 +2,7 @@ name: build
 
 on:
   schedule:
-    - cron: '52 7 * * *'  # daily at 7:52
+    - cron: '12 8 * * *'  # daily at 8:12 UTC
 
   push:
   pull_request:
