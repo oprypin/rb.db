@@ -1,6 +1,9 @@
 name: build
 
 on:
+  schedule:
+    - cron: '52 7 * * *'  # daily at 7:52
+
   push:
   pull_request:
   workflow_dispatch:
