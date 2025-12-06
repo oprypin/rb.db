@@ -34,7 +34,6 @@ DROP TABLE similar_color_ids;
 DROP VIEW similar_colors;
 DROP TABLE part_rels_resolved;
 DROP TABLE part_rels_extra;
-DROP VIEW part_stats;
 DROP VIEW color_stats;
 DROP VIEW ___set_parts_for_stats;
 

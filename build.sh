@@ -12,6 +12,13 @@ which curl gzip python > /dev/null
 cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
 mkdir -p data
 
+# Delete files older than 1 day.
+find data -mindepth 1 -type f -mtime +1 -delete
+
+export PYTHONPATH=.
+python build/download_api_data.py &
+DOWNLOAD_API_DATA_PID=$!
+
 TS="$(date +%s)"
 
 for TABLE in {themes,colors,parts,part_{categories,relationships},elements,sets,minifigs,inventories,inventory_{parts,sets,minifigs}}.csv; do
@@ -33,6 +40,7 @@ apply_sql() {
 
 rm -f data/rb.db
 apply_sql schema/rb_tables.sql
+apply_sql schema/api_tables.sql
 
 python build/import_rb_tables.py
 
@@ -52,12 +60,15 @@ fi
 
 echo ":: running tests ..."
 
-PYTEST_ARGS=(-q -m 'not custom_schema')
+PYTEST_ARGS=(-q -m 'not custom_schema' tests)
 pytest "${PYTEST_ARGS[@]}"
 
 echo ":: making custom changes ..."
 apply_sql schema/update_to_my_style.sql
 python build/gen_alternate_parts.py
 python build/gen_sort_orders.py
+
+wait $DOWNLOAD_API_DATA_PID
+python build/gen_api_tables.py
 
 echo ":: done"

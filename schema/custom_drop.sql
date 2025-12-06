@@ -12,7 +12,7 @@ DROP INDEX IF EXISTS part_rels_extra_rel_type_child_part_num_idx;
 
 DROP VIEW IF EXISTS ___set_parts_for_stats;
 DROP TABLE IF EXISTS part_color_stats;
-DROP VIEW IF EXISTS part_stats;
+DROP TABLE IF EXISTS part_stats;
 DROP VIEW IF EXISTS color_stats;
 
 DROP TABLE IF EXISTS rb_db_lov;

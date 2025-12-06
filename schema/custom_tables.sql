@@ -79,7 +79,7 @@ AS
     FROM ___set_parts_for_stats
    GROUP BY 1, 2;
 
-CREATE VIEW part_stats
+CREATE TABLE part_stats
 AS
   SELECT part_num
        , count(DISTINCT set_num) num_sets

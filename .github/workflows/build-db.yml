@@ -16,11 +16,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Checkout (API)
+        uses: actions/checkout@v6
+        with:
+          repository: oprypin/rebrickable-openapi
+          path: rebrickable-openapi
+
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
           python-version: 3.13
           cache: pip
+
+      - name: Install Python dependencies (API)
+        run: pip install -r rebrickable-openapi/requirements.txt
+
+      - name: Generate API
+        run: rebrickable-openapi/generate_python_client.sh
 
       - name: Install Python dependencies
         run: pip install -r requirements.txt
@@ -43,6 +55,8 @@ jobs:
 
       - name: Build database
         run: bash -x build.sh && ls -l data
+        env:
+          REBRICKABLE_API_KEY: ${{ secrets.REBRICKABLE_API_KEY }}
 
       - name: Generate database dump hash
         id: generate-hash
