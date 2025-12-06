@@ -14,12 +14,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
-          python-version: 3.12
+          python-version: 3.13
           cache: pip
 
       - name: Install Python dependencies
@@ -75,7 +75,7 @@ jobs:
       # Separate wait step to ensure correct reporting on previous step's success or failure
       - name: Wait for workflow to cancel
         if: steps.hash.outputs.cache-hit == 'true'
-        uses: actions/github-script@v6
+        uses: actions/github-script@v8
         with:
           script: |
             const delay = ms => new Promise(res => setTimeout(res, ms));
