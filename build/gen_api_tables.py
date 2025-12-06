@@ -26,8 +26,11 @@ def gen_api_tables(conn):
                 if bricklink_id != part_nums[0]:
                     conn.execute('''
                         INSERT INTO bricklink_to_rebrickable_parts (bricklink_id, part_num)
-                        VALUES (?, ?)
-                    ''', (bricklink_id, part_nums[0]))
+                        SELECT ?, ?
+                        WHERE EXISTS (
+                            SELECT 1 FROM parts WHERE part_num = ?
+                        );
+                    ''', (bricklink_id, part_nums[0], part_nums[0]))
                 continue
 
             stmt = '''
