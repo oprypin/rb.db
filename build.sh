@@ -12,8 +12,10 @@ which curl gzip python > /dev/null
 cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
 mkdir -p data
 
-# Delete files older than 1 day.
-find data -mindepth 1 -type f -mtime +1 -delete
+# Delete files if they are older than 1 day.
+if find data -type f -mmin +1440 | grep -q .; then
+	find data -type f -delete
+fi
 
 export PYTHONPATH=.
 python build/download_api_data.py &
@@ -26,7 +28,8 @@ for TABLE in {themes,colors,parts,part_{categories,relationships},elements,sets,
 		echo ":: skipped downloading (already exists) $TABLE"
 	else
 		echo ":: downloading $TABLE ..."
-		curl -s "https://cdn.rebrickable.com/media/downloads/${TABLE}.gz?${TS}" | gzip -cd > data/$TABLE
+		curl -s "https://cdn.rebrickable.com/media/downloads/${TABLE}.gz?${TS}" | gzip -cd > "data/${TABLE}.part"
+		mv "data/${TABLE}.part" "data/${TABLE}"
 	fi
 done
 

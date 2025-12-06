@@ -1,3 +1,4 @@
+import contextlib
 import csv
 import itertools
 import os
@@ -10,6 +11,20 @@ import rebrickable_api
 
 UNKNOWN_COLOR_ID = -1
 ANY_COLOR_ID = 9999
+
+
+@contextlib.contextmanager
+def atomicwrite(filename: str, mode='w', **kwargs):
+    filename_part = filename + '.part'
+    f = open(filename_part, mode, **kwargs)
+    try:
+        with f:
+            yield f
+    except Exception:
+        os.unlink(filename_part)
+        raise
+    else:
+        os.rename(filename_part, filename)
 
 
 configuration = rebrickable_api.Configuration(
@@ -60,7 +75,7 @@ if not os.path.isfile('data/api_mapping_colors_bricklink_to_rebrickable.csv'):
                         color.id
                     ))
 
-    with open('data/api_mapping_colors_bricklink_to_rebrickable.csv', 'w') as out_f:
+    with atomicwrite('data/api_mapping_colors_bricklink_to_rebrickable.csv') as out_f:
         writer = csv.DictWriter(out_f, fieldnames=('bricklink_id', 'color_id'))
         writer.writeheader()
         for bl_id, items in mapping.items():
@@ -72,7 +87,7 @@ if not os.path.isfile('data/api_mapping_colors_bricklink_to_rebrickable.csv'):
             )
 
 if not os.path.isfile('data/api_mapping_parts_bricklink_to_rebrickable.csv'):
-    with open('data/api_mapping_parts_bricklink_to_rebrickable.csv', 'w') as out_f:
+    with atomicwrite('data/api_mapping_parts_bricklink_to_rebrickable.csv') as out_f:
         writer = csv.DictWriter(out_f, fieldnames=('bricklink_id', 'part_num'))
         writer.writeheader()
 
