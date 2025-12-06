@@ -32,7 +32,6 @@ CREATE INDEX alternate_parts_part_a_idx ON alternate_parts(part_a);
 DROP TABLE color_properties;
 DROP TABLE similar_color_ids;
 DROP VIEW similar_colors;
-DROP TABLE part_rels_resolved;
 DROP TABLE part_rels_extra;
 DROP VIEW color_stats;
 DROP VIEW ___set_parts_for_stats;

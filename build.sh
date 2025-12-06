@@ -53,6 +53,7 @@ if [[ $# -eq 0 ]]; then
 
 	python build/gen_color_properties.py
 	python build/gen_similar_color_ids.py
+	python build/gen_part_rels_resolved.py
 
 	echo ":: creating indexes on custom tables ..."
 	apply_sql schema/custom_indexes.sql
