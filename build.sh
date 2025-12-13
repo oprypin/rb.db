@@ -65,12 +65,12 @@ fi
 echo ":: making custom changes ..."
 apply_sql schema/update_to_my_style.sql
 python build/gen_alternate_parts.py
-python build/gen_sort_orders.py
+python build/gen_part_details.py
 
 wait $DOWNLOAD_API_DATA_PID
 python build/gen_api_tables.py
 
 echo ":: running tests ..."
-pytest -q tests tests
+PYTHONPATH=.:build pytest -q tests tests
 
 echo ":: done"

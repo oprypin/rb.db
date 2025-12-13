@@ -11,6 +11,7 @@ SET
 
 --
 
+ALTER TABLE parts ADD COLUMN overlay TEXT CHECK (length(overlay) <= 3);
 ALTER TABLE parts ADD COLUMN num_sort_pos INTEGER NOT NULL DEFAULT 0;
 ALTER TABLE parts ADD COLUMN name_sort_pos INTEGER NOT NULL DEFAULT 0;
 
