@@ -1,16 +1,13 @@
 -- Additions
 
 ALTER TABLE colors ADD COLUMN sort_pos INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE colors ADD COLUMN lightness REAL CHECK(lightness >= 0 AND lightness <= 1);
 
 UPDATE colors
-SET sort_pos = (
-  SELECT color_properties.sort_pos
-  FROM color_properties
-  WHERE color_properties.id = colors.id
-);
-
-UPDATE colors
-SET rgb = upper(rgb);
+SET
+  sort_pos = (SELECT color_properties.sort_pos FROM color_properties WHERE color_properties.id = colors.id),
+  lightness = (SELECT color_properties.lightness FROM color_properties WHERE color_properties.id = colors.id),
+  rgb = upper(rgb);
 
 --
 

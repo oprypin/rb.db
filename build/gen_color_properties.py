@@ -1,9 +1,14 @@
 from contextlib import closing
 import colorsys
+
+import hsluv
 from dbconn import DbConnect
 
 HARDCODED_ORDER = ["[Unknown]", "[No Color/Any Color]", "Glow in Dark White", "White", "Black"]
 GRAY_THRESHOLD = 20 / 255.0
+
+UNKNOWN_COLOR_ID = -1
+ANY_COLOR_ID = 9999
 
 
 class Color:
@@ -11,6 +16,11 @@ class Color:
         self.id = id
         self.name = name
         self.r, self.g, self.b = [int(rgb[x: x + 2], 16) / 255.0 for x in [0, 2, 4]]
+
+        if id in (UNKNOWN_COLOR_ID, ANY_COLOR_ID):
+            self.lightness = None
+        else:
+            self.lightness = hsluv.rgb_to_hsluv((self.r, self.g, self.b))[2] / 100
         self.gray_diff = max(abs(self.r - self.g), abs(self.r - self.b), abs(self.g - self.b))
 
     def is_grayscale(self):
@@ -48,8 +58,8 @@ def gen_color_properties(conn):
             if key != prev_key:
                 pos += 1
                 prev_key = key
-            cur.execute('INSERT INTO color_properties VALUES (?, ?, ?)',
-                        (color.id, pos, color.is_grayscale()))
+            cur.execute('INSERT INTO color_properties VALUES (?, ?, ?, ?)',
+                        (color.id, pos, color.lightness, color.is_grayscale()))
 
 
 if __name__ == '__main__':

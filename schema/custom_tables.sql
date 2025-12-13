@@ -1,6 +1,7 @@
 CREATE TABLE color_properties(
   id INTEGER PRIMARY KEY REFERENCES colors(id),
   sort_pos INTEGER NOT NULL,
+  lightness REAL CHECK(lightness >= 0 AND lightness <= 1),
   is_grayscale INTEGER CHECK(is_grayscale IN (0, 1))
 ) STRICT;
 
