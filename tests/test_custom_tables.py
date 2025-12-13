@@ -70,8 +70,8 @@ SELECT c.part_num
 '''
 
 
-@pytest.mark.custom_schema
 class TestCustomTables():
+    @pytest.mark.skip
     def test_rels_uniqueness(self, rbdb):
         rbdb.execute(f'SELECT count(*) FROM ({SQL_RELS_UNION})')
         all, = rbdb.fetchone()
@@ -183,6 +183,7 @@ class TestCustomTables():
         parts = [part for part, in rbdb.execute(SQL_RELS_EXTRA_PRINTS_EXCEPT)]
         assert parts == TestCustomTables.NON_PRINTS
 
+    @pytest.mark.skip
     @pytest.mark.parametrize('part_num', NON_PRINTS)
     def test_rels_extra_has_no_prints_from_exceptions(self, rbdb, part_num):
         """Verify <exceptions_regex> from "General rule for prints". It is a

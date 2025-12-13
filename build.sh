@@ -62,11 +62,6 @@ if [[ $# -eq 0 ]]; then
 	apply_sql schema/custom_indexes.sql
 fi
 
-echo ":: running tests ..."
-
-PYTEST_ARGS=(-q -m 'not custom_schema' tests)
-pytest "${PYTEST_ARGS[@]}"
-
 echo ":: making custom changes ..."
 apply_sql schema/update_to_my_style.sql
 python build/gen_alternate_parts.py
@@ -74,5 +69,8 @@ python build/gen_sort_orders.py
 
 wait $DOWNLOAD_API_DATA_PID
 python build/gen_api_tables.py
+
+echo ":: running tests ..."
+pytest -q tests tests
 
 echo ":: done"
