@@ -5,8 +5,8 @@ ALTER TABLE colors ADD COLUMN lightness REAL CHECK(lightness >= 0 AND lightness 
 
 UPDATE colors
 SET
-  sort_pos = (SELECT color_properties.sort_pos FROM color_properties WHERE color_properties.id = colors.id),
-  lightness = (SELECT color_properties.lightness FROM color_properties WHERE color_properties.id = colors.id),
+  sort_pos = (SELECT sort_pos FROM color_properties WHERE id = colors.id),
+  lightness = (SELECT lightness FROM color_properties WHERE id = colors.id),
   rgb = upper(rgb);
 
 --
@@ -14,6 +14,11 @@ SET
 ALTER TABLE parts ADD COLUMN overlay TEXT CHECK (length(overlay) <= 3);
 ALTER TABLE parts ADD COLUMN num_sort_pos INTEGER NOT NULL DEFAULT 0;
 ALTER TABLE parts ADD COLUMN name_sort_pos INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE parts ADD COLUMN img_url TEXT;
+
+UPDATE parts
+SET
+  img_url = (SELECT img_url FROM part_stats WHERE part_num = parts.part_num);
 
 --
 
